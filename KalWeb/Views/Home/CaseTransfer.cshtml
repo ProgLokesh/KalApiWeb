@@ -1,0 +1,211 @@
+﻿
+@{
+    ViewBag.Title = "CaseTransfer";
+}
+
+<div class="container-fluid">
+    <div class="row page-titles">
+        <div class="col-md-5 col-12 align-self-center">
+            <h3 class="text-themecolor mb-0 mt-0">Case Transfer</h3>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                <li class="breadcrumb-item active">Case Transfer</li>
+            </ol>
+        </div>
+        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+            <div class="d-flex mt-2 justify-content-end">
+                <div class="d-flex mr-3 ml-2">
+                    <div class="chart-text mr-2">
+                        <h6 class="mb-0"><small>THIS MONTH</small></h6>
+                        <h4 class="mt-0 text-info">$58,356</h4>
+                    </div>
+                    <div class="spark-chart">
+                        <div id="monthchart"></div>
+                    </div>
+                </div>
+                <div class="d-flex mr-3 ml-2">
+                    <div class="chart-text mr-2">
+                        <h6 class="mb-0"><small>LAST MONTH</small></h6>
+                        <h4 class="mt-0 text-primary">$48,356</h4>
+                    </div>
+                    <div class="spark-chart">
+                        <div id="lastmonthchart"></div>
+                    </div>
+                </div>
+                <div class="">
+                    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right ml-2"><i class="ti-settings text-white"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-outline-info">
+                <div class="card-header">
+                    <h4 class="mb-0 text-white" style="text-align:center">Transfer Case One Collection Agent to Another Collection Agent</h4>
+                </div>
+                <div class="card-body">
+
+                   
+                        <div class="row pt-3">
+                            <div class="col-md-6">
+                                <div class="form-group has-success">
+                                    <label class="control-label">Collection Agent</label>
+                                    <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId1" onchange="GetCaseList()">
+                                        <option value="">---Select Agent---</option>
+                                        <option value="LOKESH01">Lokesh Gupta</option>
+                                        <option value="LOKESH02">Sonu Gupta</option>
+                                    </select>
+                                    <small class="form-control-feedback"> Select From Collection Agent </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group has-success">
+                                    <label class="control-label">Collection Agent</label>
+                                    <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId2">
+                                        <option value="">---Select Agent---</option>
+                                        <option value="LOKESH01">Lokesh Gupta</option>
+                                        <option value="LOKESH02">Sonu Gupta</option>
+                                    </select>
+                                    <small class="form-control-feedback"> Select To Collection Agent </small>
+                                </div>
+                            </div>
+                        </div>
+                   <div id="dvList"></div>
+
+
+
+                   
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+   
+
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $("td").click(function (e) {
+    //        var checkbox = $(':checkbox', $(this).parent()).get(0);
+    //        var checked = checkbox.checked;
+    //        if (checked == false) checkbox.checked = true;
+    //        else checkbox.checked = false;
+    //    });
+    //});
+
+    
+
+    function GetCaseList()
+    {
+        if ($('#ddlColAgentId1').val() == "") {
+            $('#dvList').html('');
+            return false;
+        }
+        $('#preloader').show();
+        $('#dvList').html('');
+        var ColAgentId1 = $('#ddlColAgentId1').val();
+        $.ajax({
+            url: "GetCaseDetails",
+            method: 'POST',
+            dataType: "html",
+            data: { ColAgentId1: ColAgentId1},
+            async: "true",
+            success: function (data) {
+                $('#preloader').hide();
+                $('#dvList').html(data);
+            },
+            error: function (error) {
+                $('#preloader').hide();
+                swal('Request Details Not Found');
+            }
+        });
+    }
+
+    function CallTransfer() {
+        var cnt1 = 0;
+        if ($('#ddlColAgentId2').val() == "") {
+            swal("Attention ! ", "Please Select To Collection Agent", "warning");
+            return false;
+        }
+        if ($('#ddlColAgentId2').val() == $('#ddlColAgentId1').val()) {
+            swal("Same Collection Agent Selection! ", "Please Select Another To Collection Agent", "warning");
+            return false;
+        }
+        var values = [];
+        var cnt = 0;
+        $("input[type=checkbox]:checked").each(function () {
+            if ($(this).val() != "on") {
+                values.push($(this).val());
+            }
+            cnt++;
+            cnt1++
+        });
+        if (cnt == 0) {
+            swal("Attention ! ", "Please Select Atleast one Case", "warning");
+            return false;
+        }
+        $('#preloader').show();
+        var Ids = values.join();
+        var ColAgentId2 = $('#ddlColAgentId2').val();
+        $.ajax({
+            url: "CaseTransfer",
+            method: 'POST',
+            dataType: "json",
+            data: { ColAgentId2: ColAgentId2, Ids: Ids },
+            async: "true",
+            success: function (data) {
+                swal('success');
+                swal("Success", "" +cnt1+" Case Transfer Successfully", "success");
+                GetCaseList();
+                $('#ddlColAgentId2').val("")
+            },
+            error: function (error) {
+                $('#preloader').hide();
+                swal('Request Details Not Found');
+            }
+        });
+       
+    };
+
+    function Clear() {
+        $('#preloader').show();
+        $('#ddlColAgentId1').val("")
+        $('#ddlColAgentId2').val("")
+        GetCaseList();
+        $('#preloader').hide();
+    }
+   
+    function chk() {
+        var cnt2 = 0;
+        $("input[type=checkbox]:checked").each(function () {
+            $(this).parent().parent().css("background-color", "black");
+            cnt2++;
+        });
+        $("input[type=checkbox]:not(:checked)").each(function () {
+            $(this).parent().parent().css("background-color", "");
+        });
+        $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
+    }
+    function chk1() {
+        var cnt2 = 0;
+        $("input[type=checkbox]:checked").each(function () {
+            if ($(this).val() != "on") {
+                $(this).parent().parent().css("background-color", "");
+            }
+           
+           
+        });
+        $("input[type=checkbox]:not(:checked)").each(function () {
+            if ($(this).val() != "on") {
+                $(this).parent().parent().css("background-color", "black");
+                cnt2++;
+            }
+           
+        });
+        $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
+    }
+</script>

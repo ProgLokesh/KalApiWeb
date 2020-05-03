@@ -1,0 +1,84 @@
+﻿@model IEnumerable<KalWeb.Models.UploadData>
+@{
+    ViewBag.Title = "CaseList";
+    Layout = "";
+}
+<link href="~/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" />
+
+
+
+
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-6">
+        <h4 class="card-title">Case Details List<span style="margin-left:5%;color:dodgerblue">Total Case : <b style="color:red"> @Model.Count()</b> </span><span style="margin-left:5%;color:dodgerblue" id="spnSeletecCase"></span></h4> 
+        
+    </div>
+    <div class="col-lg-6">
+        <button type="button" class="btn btn-danger btn-rounded" style="margin-left:30%" onclick="Clear();">
+            <i class="mdi mdi-format-clear"></i>
+            Clear
+        </button>
+        <button type="button" class="btn btn-primary btn-rounded" onclick="CallTransfer();">
+            <i class="mdi mdi-transit-transfer"></i>
+            Call Transfer
+        </button>
+
+    </div>
+
+</div>
+
+<hr />
+<div class="table-responsive" id="caseList">
+    <table class="tablesaw no-wrap table-bordered table-hover table" data-tablesaw>
+        <thead>
+            <tr><th>Sr No.</th>
+                <th scope="col" style="width:1px">
+                    <input type="checkbox" id="md_checkbox_0" class="chk-col-blue" data-tablesaw-checkall  onclick='chk1();'/>
+                    <label for="md_checkbox_0">
+                        <a href="#" data-tablesaw-checkall="#checkall-target" onclick='chk1();' id="status"> Select All</a>
+                    </label>
+                </th>
+                <th scope="col">User ID</th>
+                <th scope="col">Loan No</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Customer Address</th>
+                @*<th scope="col"> TL Name</th>*@
+
+
+            </tr>
+        </thead>
+        <tbody id="checkall-target">
+            @if (Model != null)
+                { var cnt = 1;
+                    foreach (var item in Model.ToList())
+                    {
+                    <tr class="record_table">
+                        <td>@cnt</td>
+                        <td>
+                            <input type="checkbox" id="chk_@item.Id" class="chk-col-blue" value="@item.Id" onclick='chk();'/>
+                            <label for="chk_@item.Id">Select</label>
+                        </td>
+                        <td>@item.UserId</td>
+                        <td>@item.LoanNo </td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.Address</td>
+                        @*<td>@item.TL_Name</td>*@
+
+
+                    </tr>
+                    cnt++;
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+
+<script src="~/assets/plugins/tablesaw/dist/tablesaw.jquery.js"></script>
+<script src="~/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
+<script src="~/assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>
+
+

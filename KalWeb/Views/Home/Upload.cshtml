@@ -1,0 +1,409 @@
+﻿@{
+    /**/
+
+    ViewBag.Title = "Upload";
+}
+<script src="~/assets/plugins/jquery/jquery.min.js"></script>
+<link rel="stylesheet" href="~/assets/plugins/dropify/dist/css/dropify.min.css">
+*@using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0 mt-0">Upload</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                    <li class="breadcrumb-item active">Upload</li>
+                </ol>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <div class="d-flex mt-2 justify-content-end">
+                    <div class="d-flex mr-3 ml-2">
+                        <div class="chart-text mr-2">
+                            <h6 class="mb-0"><small>THIS MONTH</small></h6>
+                            <h4 class="mt-0 text-info">$58,356</h4>
+                        </div>
+                        <div class="spark-chart">
+                            <div id="monthchart"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex mr-3 ml-2">
+                        <div class="chart-text mr-2">
+                            <h6 class="mb-0"><small>LAST MONTH</small></h6>
+                            <h4 class="mt-0 text-primary">$48,356</h4>
+                        </div>
+                        <div class="spark-chart">
+                            <div id="lastmonthchart"></div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right ml-2"><i class="ti-settings text-white"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+
+        <div class="row">
+            <!-- column -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Excel File Upload</h4>
+                        <label for="input-file-now-custom-1">Select Excel File</label>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="card">
+                                    <input type="file" id="FileUpload1" class="dropify" />
+                                </div>
+
+                            </div>
+                            <div class="col-md-5">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group has-success">
+                                            <label class="control-label">Data Type</label>
+                                            <select class="form-control custom-select" style="border-radius:20px" id="ddlDataType">
+                                                <option value="">---Select Type---</option>
+                                                <option value="F">Fresh</option>
+                                                <option value="I">Incremental</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group has-success">
+                                            <label class="control-label">Collection Agent</label>
+                                            <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId">
+                                                <option value="">---Select Agent---</option>
+                                                <option value="1">Lokesh Gupta</option>
+                                                <option value="2">Sonu Gupta</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-xlg-6 mb-4">
+                                        <button type="button" class="btn btn-lg btn-primary btn-rounded" id="btnUpload">
+                                            <i class="mdi mdi-cloud-upload"></i>
+                                            Upload
+                                        </button>
+                                        <input type="submit" value="Save" style="display:none" id="btnSubmit" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body" style="height:362px">
+                        <h4 class="card-title">Uploaded File Details</h4>
+
+                        <table class="table table-bordered no-wrap">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Download</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewData.Model)
+                                {
+                                <tr>
+                                    <td title="Click To Download File"> @Html.ActionLink((string)item, "DownloadFile", new { filename = item })</td>
+                                    <td><i class="fas fa-download text-success"></i>&nbsp; @Html.ActionLink("Download", "DownloadFile", new { filename = item })</td>
+                                </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+        @*<input type="button" class="btn btn-success" id="test" onclick="fnExcelReport();" value="Sample Excel" />
+            <div id='MessageHolder'></div>
+            <a href="#" id="testAnchor"></a>*@
+
+
+
+    </div>
+
+}
+<!-- jQuery file upload -->
+<script src="~/assets/plugins/dropify/dist/js/dropify.min.js"></script>
+<script>
+
+    $('#btnUpload').click(function () {
+        $('#preloader').show();
+        // Checking whether FormData is available in browser
+        DataType = $('#ddlDataType').val();
+        ColAgentId = $('#ddlColAgentId').val();
+        if (DataType == "" || ColAgentId == "") {
+            $('#preloader').hide();
+            swal("Attention ! ", "Please Select Type And Select Agent", "warning");
+            return false;
+        }
+        if (window.FormData !== undefined) {
+
+            var fileUpload = $("#FileUpload1").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+
+            // Adding one more key to FormData object
+            fileData.append('DataType', $('#ddlDataType').val());
+            fileData.append('ColAgentId', $('#ddlColAgentId').val());
+
+            $.ajax({
+                url: '/Home/CheckData',
+                type: "POST",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData,
+                success: function (result) {
+                    $('#preloader').hide();
+                    var strResponse = result.split(',');
+                    if (strResponse.length > 1) {
+                        var status = strResponse[0];
+                        var txt = strResponse[1];
+                        //-------------------------------------------------------------------------------------------------------
+                        swal({
+                            title: "Are you sure?",
+                            text: "" + strResponse[2] == "" ? "More than 10 record not valid" : strResponse[2] + "",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Skip and Countinue",
+                            cancelButtonText: "Cancel",
+                            closeOnConfirm: false,
+                            closeOnCancel: false,
+                            html: true,
+                        }, function (isConfirm) {
+                            if (isConfirm) {
+                                swal("Uploded!", "" + strResponse[1] + "", "success");
+                                UploadRecord();
+                            } else {
+                                //MVC.RedirectToAction("Home", "Upload");
+                                window.location = "Upload";
+                                swal("Cancelled", "Your excel file is not uploaded :)", "error");
+                            }
+                        });
+                        //-----------------------------------------------------------------------------------
+                    }
+                    else {
+                        swal("Attention ! ", "" + result + "", "warning");
+                    }
+
+                },
+                error: function (err) {
+                    $('#preloader').hide();
+                    swal(err.statusText);
+                }
+            });
+        }
+        else {
+            $('#preloader').hide();
+            alert("FormData is not supported.");
+        }
+    });
+
+    $('.dropify').dropify();
+
+    // Translated
+    $('.dropify-fr').dropify({
+        messages: {
+            default: 'Glissez-déposez un fichier ici ou cliquez',
+            replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+            remove: 'Supprimer',
+            error: 'Désolé, le fichier trop volumineux'
+        }
+    });
+
+    // Used events
+    var drEvent = $('#input-file-events').dropify();
+
+    drEvent.on('dropify.beforeClear', function (event, element) {
+        return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+    });
+
+    drEvent.on('dropify.afterClear', function (event, element) {
+        alert('File deleted');
+    });
+
+    drEvent.on('dropify.errors', function (event, element) {
+        console.log('Has Errors');
+    });
+
+    var drDestroy = $('#input-file-to-destroy').dropify();
+    drDestroy = drDestroy.data('dropify')
+    $('#toggleDropify').on('click', function (e) {
+        e.preventDefault();
+        if (drDestroy.isDropified()) {
+            drDestroy.destroy();
+        } else {
+            drDestroy.init();
+        }
+    })
+
+
+    //$(document).on("click", "[id='btnExportToExcel']", ExportToExcel);
+
+    var tab_text;
+    var data_type = 'data:application/vnd.ms-excel';
+
+
+    function CreateHiddenTable(ListOfMessages) {
+        var ColumnHead1 = "Product";
+        var ColumnHead2 = "PRODUCT TYPE";
+        var ColumnHead3 = "FACILITY TYPE";
+        var ColumnHead4 = "CUST ID";
+        var ColumnHead5 = "Loan No";
+        var ColumnHead6 = "CUSTOMER NAME";
+        var ColumnHead7 = "ADDRESSS";
+        var ColumnHead8 = "CITY";
+        var ColumnHead9 = "LOCATION";
+        var ColumnHead10 = "phone 1";
+        var ColumnHead11 = "phone 2";
+        var ColumnHead12 = "New Contact No.";
+        var ColumnHead13 = "Guarantor Name";
+        var ColumnHead14 = "Guarantor Mno";
+        var ColumnHead15 = "Frequency / Payment Frequency";
+        var ColumnHead16 = "Billing Cycle";
+        var ColumnHead17 = "Overdue Amt";
+        var ColumnHead18 = "EMI";
+        var ColumnHead19 = "Total EMI Due";
+        var ColumnHead20 = "CBC + LPP";
+        var ColumnHead21 = "CBC";
+        var ColumnHead22 = "LPP";
+        var ColumnHead23 = "Total Outstanding(TOS)";
+        var ColumnHead24 = "Principal Outstanding (POS)";
+        var ColumnHead25 = "CUST_EXPO";
+        var ColumnHead26 = "POS in Crore";
+        var ColumnHead27 = "Norms";
+        var ColumnHead28 = "NPA STAGE";
+        var ColumnHead29 = "DPD";
+        var ColumnHead30 = "BUCKET";
+        var ColumnHead31 = "POOL";
+        var ColumnHead32 = "User E-CODE";
+        var ColumnHead33 = "User Name";
+        var ColumnHead34 = "Contact no";
+        var ColumnHead35 = "TBSS TL EMP CODE";
+        var ColumnHead36 = "TL NAME";
+        var ColumnHead37 = "User id";
+
+
+
+        var TableMarkUp = '<table id="myModifiedTable" class="visibilityHide">' +
+            '<thead>' +
+            '<tr>' +
+            '<td><b>' + ColumnHead1 + '</b></td>' +
+            '<td><b>' + ColumnHead2 + '</b></td>' +
+            '<td><b>' + ColumnHead3 + '</b></td>' +
+            '<td><b>' + ColumnHead4 + '</b></td>' +
+            '<td><b>' + ColumnHead5 + '</b></td>' +
+            '<td><b>' + ColumnHead6 + '</b></td>' +
+            '<td><b>' + ColumnHead7 + '</b></td>' +
+            '<td><b>' + ColumnHead8 + '</b></td>' +
+            '<td><b>' + ColumnHead9 + '</b></td>' +
+            '<td><b>' + ColumnHead10 + '</b></td>' +
+            '<td><b>' + ColumnHead11 + '</b></td>' +
+            '<td><b>' + ColumnHead12 + '</b></td>' +
+            '<td><b>' + ColumnHead13 + '</b></td>' +
+            '<td><b>' + ColumnHead14 + '</b></td>' +
+            '<td><b>' + ColumnHead15 + '</b></td>' +
+            '<td><b>' + ColumnHead16 + '</b></td>' +
+            '<td><b>' + ColumnHead17 + '</b></td>' +
+            '<td><b>' + ColumnHead18 + '</b></td>' +
+            '<td><b>' + ColumnHead19 + '</b></td>' +
+            '<td><b>' + ColumnHead20 + '</b></td>' +
+            '<td><b>' + ColumnHead21 + '</b></td>' +
+            '<td><b>' + ColumnHead22 + '</b></td>' +
+            '<td><b>' + ColumnHead23 + '</b></td>' +
+            '<td><b>' + ColumnHead24 + '</b></td>' +
+            '<td><b>' + ColumnHead25 + '</b></td>' +
+            '<td><b>' + ColumnHead26 + '</b></td>' +
+            '<td><b>' + ColumnHead27 + '</b></td>' +
+            '<td><b>' + ColumnHead28 + '</b></td>' +
+            '<td><b>' + ColumnHead29 + '</b></td>' +
+            '<td><b>' + ColumnHead30 + '</b></td>' +
+            '<td><b>' + ColumnHead31 + '</b></td>' +
+            '<td><b>' + ColumnHead32 + '</b></td>' +
+            '<td><b>' + ColumnHead33 + '</b></td>' +
+            '<td><b>' + ColumnHead34 + '</b></td>' +
+            '<td><b>' + ColumnHead35 + '</b></td>' +
+            '<td><b>' + ColumnHead36 + '</b></td>' +
+            '<td><b>' + ColumnHead37 + '</b></td>' +
+            '</tr>' +
+            '</thead><tbody>';
+        for (i = 0; i < ListOfMessages.length; i++) {
+            TableMarkUp += '<tr><td>' + ListOfMessages[i] + '</td></tr>';
+        }
+        TableMarkUp += "</tbody></table>";
+        $('#MessageHolder').append(TableMarkUp);
+    }
+
+    function fnExcelReport() {
+        var ListOfMessages = [];
+        CreateHiddenTable(ListOfMessages);
+        tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+        tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+        tab_text = tab_text + '<x:Name>Error Messages</x:Name>';
+        tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+        tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+        tab_text = tab_text + "<table border='1px'>";
+        tab_text = tab_text + $('#myModifiedTable').html();;
+        tab_text = tab_text + '</table></body></html>';
+        data_type = 'data:application/vnd.ms-excel';
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+            if (window.navigator.msSaveBlob) {
+                var blob = new Blob([tab_text], {
+                    type: "application/excel;charset=utf-8;"
+                });
+                navigator.msSaveBlob(blob, 'SampleBankMemo.xls');
+            }
+        } else {
+            console.log(data_type);
+            console.log(tab_text); 1
+            $('#testAnchor')[0].click()
+        }
+        $('#MessageHolder').html("");
+    }
+    $($("#testAnchor")[0]).click(function () {
+        console.log(data_type);
+        console.log(tab_text);
+        $('#testAnchor').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+        $('#testAnchor').attr('download', 'SampleBankMemo.xls');
+    });
+
+
+
+
+    function UploadRecord() {
+        $('#btnSubmit').click();
+    }
+
+    
+
+</script>
+
+
+
