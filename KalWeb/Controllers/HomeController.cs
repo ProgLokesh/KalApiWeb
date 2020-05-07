@@ -743,6 +743,7 @@ namespace KalWeb.Controllers
                     objUploadData.Address = Convert.ToString(dr["Address"]);
                     objUploadData.TL_Name = Convert.ToString(dr["TL_Name"]);
                     objUploadData.UserId = Convert.ToString(dr["UserId"]);
+                    objUploadData.ContactNo = Convert.ToString(dr["ContactNo"]);
                     lstUploadData.Add(objUploadData);
                 }
             }
