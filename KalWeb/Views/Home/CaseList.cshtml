@@ -34,14 +34,14 @@
         <thead>
             <tr>
                 @*<th>Sr No.</th>*@
-                <th scope="col">User ID</th>
+
                 <th scope="col" style="width:1px">
                     <input type="checkbox" id="md_checkbox_0" class="chk-col-blue" data-tablesaw-checkall onclick='chk1();' />
                     <label for="md_checkbox_0">
-                        <a href="#" data-tablesaw-checkall="#checkall-target" onclick='chk1();' id="status"> Select All</a>
+                        <a href="#" data-tablesaw-checkall="#checkall-target" onclick='chk1();' id="status"></a>
                     </label>
                 </th>
-
+                <th scope="col">User ID</th>
                 <th scope="col">Loan No</th>
                 <th scope="col">Customer Name</th>
                 <th scope="col"> Conatct No</th>
@@ -51,28 +51,28 @@
 
             </tr>
         </thead>
-        <tbody id="checkall-target">
+        <tbody id="checkall-target" title="Click To Select Case For transfer" style="cursor:pointer">
             @if (Model != null)
             {
                 var cnt = 1;
                 foreach (var item in Model.ToList())
                 {
-                    <tr class="record_table">
-                        <td>@item.UserId</td>
-                        @*<td>@cnt</td>*@
-                        <td>
-                            <input type="checkbox" id="chk_@item.Id" class="chk-col-blue" value="@item.Id" onclick='chk();' />
-                            <label for="chk_@item.Id">Select</label>
-                        </td>
+            <tr class="record_table">
 
-                        <td>@item.LoanNo </td>
-                        <td>@item.CustomerName</td>
-                        <td>@item.ContactNo</td>
-                        <td>@item.Address</td>
+                @*<td>@cnt</td>*@
+                <td>
+                    <input type="checkbox" id="chk_@item.Id" class="chk-col-blue" value="@item.Id" onclick="chk();" />
+                    <label for="chk_@item.Id"></label>
+                </td>
+                <td>@item.UserId</td>
+                <td>@item.LoanNo </td>
+                <td>@item.CustomerName</td>
+                <td>@item.ContactNo</td>
+                <td>@item.Address</td>
 
 
 
-                    </tr>
+            </tr>
                     cnt++;
                 }
             }
@@ -86,10 +86,40 @@
 <script src="~/assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="~/assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
 <script>
+    
+    $('#example23 tbody tr td').click(function (event) {
+        debugger;
+        if ($(this).text().trim() != "") {
+            $(this).parent().find('input:checkbox').each(function () {
+                if (this.checked) {
+                    this.checked = false;
+                }
+                else {
+                    this.checked = true;
+                }
+            })
+            var cnt2 = 0;
+            $("input[type=checkbox]:checked").each(function () {
+                $(this).parent().parent().css("background-color", "black");
+                cnt2++;
+            });
+            $("input[type=checkbox]:not(:checked)").each(function () {
+                $(this).parent().parent().css("background-color", "");
+            });
+            $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
+        }
+        
+    });
+    
+
     $('#example23').DataTable({
         dom: 'Bfrtip',
         responsive: true,
         paging: false,
+        "columnDefs": [{
+            "targets": [0],
+            "orderable": false
+        }]
 
     });
 </script>

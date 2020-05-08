@@ -46,36 +46,36 @@
                 </div>
                 <div class="card-body">
 
-                   
-                        <div class="row pt-3">
-                            <div class="col-md-6">
-                                <div class="form-group has-success">
-                                    <label class="control-label">Collection Agent</label>
-                                    <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId1" onchange="GetCaseList()">
-                                        <option value="">---Select Agent---</option>
-                                        <option value="LOKESH01">Lokesh Gupta</option>
-                                        <option value="LOKESH02">Sonu Gupta</option>
-                                    </select>
-                                    <small class="form-control-feedback"> Select From Collection Agent </small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group has-success">
-                                    <label class="control-label">Collection Agent</label>
-                                    <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId2">
-                                        <option value="">---Select Agent---</option>
-                                        <option value="LOKESH01">Lokesh Gupta</option>
-                                        <option value="LOKESH02">Sonu Gupta</option>
-                                    </select>
-                                    <small class="form-control-feedback"> Select To Collection Agent </small>
-                                </div>
+
+                    <div class="row pt-3">
+                        <div class="col-md-6">
+                            <div class="form-group has-success">
+                                <label class="control-label">Collection Agent</label>
+                                <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId1" onchange="GetCaseList()">
+                                    <option value="">---Select Agent---</option>
+                                    <option value="LOKESH01">Lokesh Gupta</option>
+                                    <option value="LOKESH02">Sonu Gupta</option>
+                                </select>
+                                <small class="form-control-feedback"> Select From Collection Agent </small>
                             </div>
                         </div>
-                   <div id="dvList"></div>
+                        <div class="col-md-6">
+                            <div class="form-group has-success">
+                                <label class="control-label">Collection Agent</label>
+                                <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId2">
+                                    <option value="">---Select Agent---</option>
+                                    <option value="LOKESH01">Lokesh Gupta</option>
+                                    <option value="LOKESH02">Sonu Gupta</option>
+                                </select>
+                                <small class="form-control-feedback"> Select To Collection Agent </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dvList"></div>
 
 
 
-                   
+
 
                 </div>
             </div>
@@ -83,24 +83,16 @@
     </div>
 
 
-   
+
 
 </div>
-
+@*<script src="~/assets/plugins/jquery/jquery.min.js"></script>*@
 <script>
-    //$(document).ready(function () {
-    //    $("td").click(function (e) {
-    //        var checkbox = $(':checkbox', $(this).parent()).get(0);
-    //        var checked = checkbox.checked;
-    //        if (checked == false) checkbox.checked = true;
-    //        else checkbox.checked = false;
-    //    });
-    //});
 
-    
 
-    function GetCaseList()
-    {
+
+
+    function GetCaseList() {
         if ($('#ddlColAgentId1').val() == "") {
             $('#dvList').html('');
             return false;
@@ -112,7 +104,7 @@
             url: "GetCaseDetails",
             method: 'POST',
             dataType: "html",
-            data: { ColAgentId1: ColAgentId1},
+            data: { ColAgentId1: ColAgentId1 },
             async: "true",
             success: function (data) {
                 $('#preloader').hide();
@@ -159,7 +151,7 @@
             async: "true",
             success: function (data) {
                 swal('success');
-                swal("Success", "" +cnt1+" Case Transfer Successfully", "success");
+                swal("Success", "" + cnt1 + " Case Transfer Successfully", "success");
                 GetCaseList();
                 $('#ddlColAgentId2').val("")
             },
@@ -168,7 +160,7 @@
                 swal('Request Details Not Found');
             }
         });
-       
+
     };
 
     function Clear() {
@@ -178,7 +170,7 @@
         GetCaseList();
         $('#preloader').hide();
     }
-   
+
     function chk() {
         var cnt2 = 0;
         $("input[type=checkbox]:checked").each(function () {
@@ -190,22 +182,26 @@
         });
         $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
     }
+
+
     function chk1() {
         var cnt2 = 0;
         $("input[type=checkbox]:checked").each(function () {
             if ($(this).val() != "on") {
                 $(this).parent().parent().css("background-color", "");
             }
-           
-           
+
+
         });
         $("input[type=checkbox]:not(:checked)").each(function () {
             if ($(this).val() != "on") {
                 $(this).parent().parent().css("background-color", "black");
                 cnt2++;
             }
-           
+
         });
         $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
     }
+
+   
 </script>
