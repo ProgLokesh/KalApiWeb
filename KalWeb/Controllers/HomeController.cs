@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using System.Web.Script.Serialization;
 
 namespace KalWeb.Controllers
 {
@@ -769,6 +770,45 @@ namespace KalWeb.Controllers
             return JsonConvert.SerializeObject(dt);
         }
 
+
+        public string GetUserData()
+        {
+            con = new SqlConnection(ConfigurationManager.ConnectionStrings["Model11"].ToString());
+            cmd = new SqlCommand("GetUser", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            da = new SqlDataAdapter(cmd);
+            con.Open();
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            con.Close();
+            da.Dispose();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                dt.Columns["Id"].ColumnName = "Id";
+                dt.Columns["Name"].ColumnName = "Name";
+                return DataTableToJSONNew(dt);
+            }
+            else
+            {
+                return DataTableToJSONNew(dt);
+            }
+        }
+
+        public static string DataTableToJSONNew(DataTable table)
+        {
+            var list = new List<Dictionary<string, object>>();
+            foreach (DataRow row in table.Rows)
+            {
+                var dict = new Dictionary<string, object>();
+                foreach (DataColumn col in table.Columns)
+                {
+                    dict[col.ColumnName] = row[col];
+                }
+                list.Add(dict);
+            }
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return serializer.Serialize(list);
+        }
 
     }
 }

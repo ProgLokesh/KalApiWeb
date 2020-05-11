@@ -79,9 +79,9 @@
                                         <div class="form-group has-success">
                                             <label class="control-label">Collection Agent</label>
                                             <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId">
-                                                <option value="">---Select Agent---</option>
+                                                @*<option value="">---Select Agent---</option>
                                                 <option value="1">Lokesh Gupta</option>
-                                                <option value="2">Sonu Gupta</option>
+                                                <option value="2">Sonu Gupta</option>*@
                                             </select>
                                         </div>
                                     </div>
@@ -401,7 +401,31 @@
         $('#btnSubmit').click();
     }
 
-    
+    function BindUser() {
+        $("#ModelId").empty();
+        $.ajax({
+            type: 'GET',
+            url: "/Home/GetUserData",
+            dataType: 'json',
+            //data: { productId: $("#ProductId").val() },
+            success: function (users) {
+                var modelList = '<option value="">Select Agent</option>';
+                for (var i = 0; i < users.length; i++) {
+                    modelList = modelList + '<option value=' + users[i].Id + '>' + users[i].Name + '</option>';
+                }
+                $('#ddlColAgentId').html(modelList);
+            },
+            error: function (ex) {
+                alert('Failed to retrieve PRODUCT MODELS.' + ex);
+            }
+        });
+    }
+
+
+$(document).ready(function () {
+    BindUser();
+});
+
 
 </script>
 

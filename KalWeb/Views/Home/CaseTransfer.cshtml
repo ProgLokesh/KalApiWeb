@@ -52,9 +52,9 @@
                             <div class="form-group has-success">
                                 <label class="control-label">Collection Agent</label>
                                 <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId1" onchange="GetCaseList()">
-                                    <option value="">---Select Agent---</option>
+                                    @*<option value="">---Select Agent---</option>
                                     <option value="LOKESH01">Lokesh Gupta</option>
-                                    <option value="LOKESH02">Sonu Gupta</option>
+                                    <option value="LOKESH02">Sonu Gupta</option>*@
                                 </select>
                                 <small class="form-control-feedback"> Select From Collection Agent </small>
                             </div>
@@ -63,9 +63,9 @@
                             <div class="form-group has-success">
                                 <label class="control-label">Collection Agent</label>
                                 <select class="form-control custom-select" style="border-radius:20px" id="ddlColAgentId2">
-                                    <option value="">---Select Agent---</option>
+                                    @*<option value="">---Select Agent---</option>
                                     <option value="LOKESH01">Lokesh Gupta</option>
-                                    <option value="LOKESH02">Sonu Gupta</option>
+                                    <option value="LOKESH02">Sonu Gupta</option>*@
                                 </select>
                                 <small class="form-control-feedback"> Select To Collection Agent </small>
                             </div>
@@ -86,7 +86,7 @@
 
 
 </div>
-@*<script src="~/assets/plugins/jquery/jquery.min.js"></script>*@
+<script src="~/assets/plugins/jquery/jquery.min.js"></script>
 <script>
 
 
@@ -202,6 +202,31 @@
         });
         $('#spnSeletecCase').html('Selected Case : <b style="color:red"> ' + cnt2 + '</b>');
     }
+
+    function BindUser() {
+        $("#ModelId").empty();
+        $.ajax({
+            type: 'GET',
+            url: "/Home/GetUserData",
+            dataType: 'json',
+            //data: { productId: $("#ProductId").val() },
+            success: function (users) {
+                var modelList = '<option value="">Select Agent</option>';
+                for (var i = 0; i < users.length; i++) {
+                    modelList = modelList + '<option value=' + users[i].Id + '>' + users[i].Name + '</option>';
+                }
+                $('#ddlColAgentId1,#ddlColAgentId2').html(modelList);
+            },
+            error: function (ex) {
+                alert('Failed to retrieve PRODUCT MODELS.' + ex);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        BindUser();
+    });
 
    
 </script>
